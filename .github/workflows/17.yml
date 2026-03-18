@@ -20,6 +20,8 @@ jobs:
             name: Xiaomi 17 Pro
           - model: popsicle
             name: Xiaomi 17 Pro Max
+          - model: nezha
+            name: Xiaomi 17 Ultra
 
     env:
       MODEL: ${{ matrix.device.model }}

@@ -1,0 +1,174 @@
+name: Build QyzROM for Xiaomi 17 Series
+
+permissions:
+  contents: write
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build for ${{ matrix.device.name }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        device:
+          - model: pudding
+            name: Xiaomi 17
+          - model: pandora
+            name: Xiaomi 17 Pro
+          - model: popsicle
+            name: Xiaomi 17 Pro Max
+
+    env:
+      MODEL: ${{ matrix.device.model }}
+      DEVICE_NAME: ${{ matrix.device.name }}
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Checkout another repo
+        uses: actions/checkout@v4
+        with:
+          repository: qlenlen/TIK_mine
+          ref: mi
+          token: ${{ secrets.TOKEN }}
+          path: qyz
+          submodules: recursive
+
+      # - name: Free disk space (1/2)
+      #   uses: jlumbroso/free-disk-space@main
+      #   with:
+      #     tool-cache: true
+
+      # - name: Free disk space (2/2)
+      #   uses: rokibhasansagar/slimhub_actions@main
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Install dependencies
+        run: |
+          cd qyz
+          uv sync
+          cd ..
+
+      - name: Set up build environment
+        run: |
+          sudo apt-get -y update
+          sudo apt-get -y install curl xxd patchelf flex lz4 cpio tar zip jq pigz zstd
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Download firmware
+        run: |
+          cd qyz
+          mkdir TEST
+          uv run src/custom/download_rom.py ${{ env.MODEL }} --method fastboot --out TEST
+          cd ..
+        
+      - name: Build ROM
+        env:
+          RUN_EXTRA_STEPS: "1"
+        run: |
+          cd qyz
+          export PYTHONPATH=$(pwd)
+          uv run src/device/popsicle.py
+          cd ..
+
+      - name: Get ROM version
+        id: get_version
+        run: |
+          ROM_VERSION=$(cat qyz/TEST/version_info.txt)
+          echo "ROM Version: $ROM_VERSION"
+          echo "ROM_VERSION=$ROM_VERSION" >> "$GITHUB_ENV"
+
+      - name: Upload to GoFile
+        id: upload
+        run: |
+          ZIP_FILE=$(find qyz/TEST -maxdepth 1 -type f -name "*.zip" | head -n 1)
+          if [ -z "$ZIP_FILE" ]; then
+            echo "No ZIP file found!"
+            exit 1
+          fi
+          NEW_ZIP_NAME="QyzROM_${{ env.MODEL }}.zip"
+          mv "$ZIP_FILE" "qyz/TEST/$NEW_ZIP_NAME"
+          RESPONSE=$(curl -s -F "file=@qyz/TEST/$NEW_ZIP_NAME" -F "token=${{ secrets.GOFILE_TOKEN }}" -F "folderId=${{ secrets.GOFILE_FOLDER_ID }}" "https://upload-eu-par.gofile.io/uploadFile")
+          echo "Upload response: $RESPONSE"
+          URL=$(echo "$RESPONSE" | jq -r '.data.downloadPage')
+          if [ -z "$URL" ] || [ "$URL" = "null" ]; then
+            echo "Failed to parse download URL from GoFile response"
+            exit 1
+          fi
+          echo "download_url=$URL" >> "$GITHUB_OUTPUT"
+
+      - name: Save release info
+        run: |
+          name='${{ env.DEVICE_NAME }}'
+          url='${{ steps.upload.outputs.download_url }}'
+          model='${{ env.MODEL }}'
+          rom='${{ env.ROM_VERSION }}'
+          {
+            printf "name=%q\n" "$name"
+            printf "url=%q\n" "$url"
+            printf "model=%q\n" "$model"
+            printf "rom_version=%q\n" "$rom"
+          } > "release-info-${{ env.MODEL }}.env"
+
+      - name: Upload release info artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-info-${{ env.MODEL }}
+          path: release-info-${{ env.MODEL }}.env
+
+  release:
+    name: Create unified release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all release infos
+        uses: actions/download-artifact@v4
+        with:
+          pattern: release-info-*
+          merge-multiple: true
+
+      - name: Compute tag and generate release body
+        id: gen
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "这是一个自动构建的ROM，适用于 Xiaomi 17 系列以下机型：" > release_body.md
+          first=1
+          shopt -s nullglob
+          for f in release-info-*.env; do
+            # shellcheck source=/dev/null
+            source "$f"
+            echo "" >> release_body.md
+            echo "**${name}**" >> release_body.md
+            echo "下载链接: ${url}" >> release_body.md
+            if [ "$first" -eq 1 ] && [ -n "${rom_version:-}" ]; then
+              echo "rom_version=${rom_version}" >> "$GITHUB_OUTPUT"
+              first=0
+            fi
+          done
+          echo "" >> release_body.md
+          echo "内核为 KernelSU LKM 需安装 官方apk 以激活 root 权限" >> release_body.md
+          echo "" >> release_body.md
+          echo "> WARNING! THESE BUILDS MAY NOT BOOTABLE, ONLY FLASH FOR TESTING PURPOSES ONLY IF THE DEVELOPER TOLD YOU." >> release_body.md
+
+      - name: Create unified release
+        uses: ncipollo/release-action@v1
+        with:
+          allowUpdates: true
+          removeArtifacts: true
+          name: QyzROM_${{ steps.gen.outputs.rom_version }}
+          tag: ${{ steps.gen.outputs.rom_version }}
+          bodyFile: release_body.md
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+
+

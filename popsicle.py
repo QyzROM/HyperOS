@@ -114,6 +114,11 @@ ModuleDealer("GameProp").perform_task()
 # fast dexoat
 ModuleDealer("DexoatProp").perform_task()
 
+ModuleDealer("BLFake").perform_task()
+
+# misc
+ModuleDealer("PropMod").perform_task()
+
 # repack and move to super
 img_vendor.pack_erofs().out2super()
 img_vendor.unlink().rm_content()

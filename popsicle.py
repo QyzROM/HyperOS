@@ -11,6 +11,7 @@ RUN_EXTRA_STEPS = os.getenv("RUN_EXTRA_STEPS") == "1"
 
 from src.custom.ModuleDealer import ModuleDealer
 from src.custom.VendorDealer import VendorDealer
+from src.custom.ProductDealer import ProductDealer
 from src.device import general
 from src.image.Image import MyImage
 from src.image.ImageConverter import ImageConverter
@@ -82,7 +83,8 @@ img_product.unpack()
 img_system_ext = MyImage("system_ext_a")
 img_system_ext.unpack()
 
-
+# remove gms restrictions
+ProductDealer().unlock_gms()
 VendorDealer().remove_avb()
 
 # split mi_ext and move stuff to corresponding partition

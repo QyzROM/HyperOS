@@ -104,6 +104,8 @@ ModuleDealer("DeBloat").perform_task()
 
 ModuleDealer("ChargeProp").perform_task()
 
+ModuleDealer("LessLogProp").perform_task()
+
 # repack and move to super
 img_vendor.pack_erofs().out2super()
 img_vendor.unlink().rm_content()

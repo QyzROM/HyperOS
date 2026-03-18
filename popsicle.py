@@ -46,8 +46,8 @@ if RUN_EXTRA_STEPS:
 general.deal_with_avb()
 
 # 2.2 内核替换
-# now it's 5.15.195 lkm
-# general.replace_kernel(PRIV_RESOURCE, WORK)
+# now it's 6.12.23 lkm
+general.replace_kernel(PRIV_RESOURCE, WORK)
 # 补充 进行ksu-lkm修补
 general.patch_lkm("android16-6.12")
 

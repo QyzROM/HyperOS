@@ -19,7 +19,7 @@ tikpath = TikPath()
 myprinter = MyPrinter()
 
 
-def copyimg2project(img_name: str,folder: str="images") -> str:
+def copyimg2project(img_name: str, folder: str = "images") -> str:
     """Copy from extract folder to project root
     Return the dest path of the image"""
     src = f"{tikpath.project_path}/{folder}/{img_name}.img"
@@ -107,15 +107,25 @@ def deal_with_optics():
 def replace_kernel(private_resource: str, work: str):
     resource_kernel = Kernel(f"{private_resource}/kernel/kernel")
     if not resource_kernel.exists():
-        myprinter.print_red("No kernel found")
+        myprinter.print_red("No custom kernel found")
         return
-    myprinter.print_white(resource_kernel.read_version())
+    resource_kernel.read_version()
 
-    with BootImg(f"{work}/AP/boot.img") as origin_boot:
-        # 此块内工作目录为 {WORK}/AP
+    # find stock kernel
+    stock_boot = f"{work}/images/boot.img"
+    if not os.path.exists(stock_boot):
+        myprinter.print_red("No stock boot image found")
+        return
+
+    # move kernel to project tmp and patch it
+    shutil.rmtree(f"{work}/tmp", ignore_errors=True)
+    os.makedirs(tmp := f"{work}/tmp", exist_ok=True)
+    shutil.move(f"{work}/images/boot.img", tmp)
+
+    with BootImg(f"{work}/tmp/boot.img") as origin_boot:
         origin_boot.unpack()
         os.system(f"rm kernel")
-        resource_kernel.copy_to(f"{work}/AP/kernel")
+        resource_kernel.copy_to(f"{tmp}/kernel")
         origin_boot.repack()
         origin_boot.move2out()
 

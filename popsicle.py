@@ -104,8 +104,6 @@ ModuleDealer("DeBloat").perform_task()
 
 ModuleDealer("ChargeProp").perform_task()
 
-ModuleDealer("LessLogProp").perform_task()
-
 ModuleDealer("UiProp").perform_task()
 
 # fast enter game

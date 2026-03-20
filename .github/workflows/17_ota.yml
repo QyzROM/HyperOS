@@ -79,7 +79,7 @@ jobs:
         run: |
           cd qyz
           export PYTHONPATH=$(pwd)
-          uv run src/device/popsicle.py
+          uv run src/device/popsicle_ota.py
           cd ..
 
       - name: Get ROM version

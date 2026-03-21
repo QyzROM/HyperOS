@@ -124,9 +124,6 @@ img_system_ext.unpack()
 ProductDealer(is_aonly=False).unlock_gms()
 VendorDealer(is_aonly=False).remove_avb()
 
-# add general components
-ModuleDealer("GeneralComponents").perform_task()
-
 # split mi_ext and move stuff to corresponding partition
 ModuleDealer("MiExt").perform_task()
 
@@ -140,22 +137,25 @@ ModuleDealer("Binary").perform_task()
 # preload apks
 ModuleDealer("Preload").perform_task()
 
+# add general components
+ModuleDealer("GeneralComponents").perform_task()
+
 ModuleDealer("DeBloat").perform_task()
 
-ModuleDealer("ChargeProp").perform_task()
+# ModuleDealer("ChargeProp").perform_task()
 
-ModuleDealer("UiProp").perform_task()
+# ModuleDealer("UiProp").perform_task()
 
 # fast enter game
 ModuleDealer("GameProp").perform_task()
 
 # fast dexoat
-ModuleDealer("DexoatProp").perform_task()
+# ModuleDealer("DexoatProp").perform_task()
 
 ModuleDealer("BLFake").perform_task()
 
 # misc
-ModuleDealer("PropMod").perform_task()
+# ModuleDealer("PropMod").perform_task()
 
 # repack and move to super
 img_vendor.pack_erofs().out2super()

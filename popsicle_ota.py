@@ -121,7 +121,7 @@ img_system_ext.unpack()
 
 # remove gms restrictions
 ProductDealer(True).unlock_gms()
-VendorDealer().remove_avb()
+VendorDealer(True).remove_avb()
 
 # add general components
 ModuleDealer("MiEGeneralComponentsxt").perform_task()

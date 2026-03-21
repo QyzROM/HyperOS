@@ -82,12 +82,21 @@ if os.path.exists(json_path):
 else:
     myprinter.print_yellow("super.json not found, using default 0")
 
-# move 
-targets = ["vendor", "system", "mi_ext", "product", "system_ext", "odm", "system_dlkm", "vendor_dlkm"]
+# move
+targets = [
+    "vendor",
+    "system",
+    "mi_ext",
+    "product",
+    "system_ext",
+    "odm",
+    "system_dlkm",
+    "vendor_dlkm",
+]
 
 # move images to project_path
 for target in targets:
-    img_path = os.path.join(WORK, "images", target)
+    img_path = os.path.join(WORK, "images", f"{target}.img")
     if os.path.exists(img_path):
         shutil.move(img_path, tikpath.project_path)
         myprinter.print_green(f"Moved {target} to project path")
@@ -113,6 +122,9 @@ img_system_ext.unpack()
 # remove gms restrictions
 ProductDealer().unlock_gms()
 VendorDealer().remove_avb()
+
+# add general components
+ModuleDealer("MiEGeneralComponentsxt").perform_task()
 
 # split mi_ext and move stuff to corresponding partition
 ModuleDealer("MiExt").perform_task()

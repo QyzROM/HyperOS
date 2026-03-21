@@ -62,7 +62,7 @@ jobs:
       - name: Set up build environment
         run: |
           sudo apt-get -y update
-          sudo apt-get -y install curl xxd patchelf flex lz4 cpio tar zip jq pigz zstd xz-utils
+          sudo apt-get -y install curl xxd patchelf flex lz4 cpio tar zip jq pigz zstd xz-utils e2fsprogs
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 

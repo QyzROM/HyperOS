@@ -44,9 +44,9 @@ def moveimg2project(img_name: str, folder: str = "images") -> str:
 def deal_with_avb():
     """Move vbmeta and vbmeta_system to project root
     Deal with them and move them to out folder"""
-    copyimg2project("vbmeta")
+    moveimg2project("vbmeta")
     Vbmeta("vbmeta").deal_with().move2out()
-    copyimg2project("vbmeta_system")
+    moveimg2project("vbmeta_system")
     Vbmeta("vbmeta_system").deal_with().move2out()
 
 
@@ -82,7 +82,7 @@ def replace_rec(private_resource: str):
 def deal_with_vboot(remove_encryption: bool = True):
     """Move vendor_boot.img to project root
     Deal with it and move it to out folder"""
-    copyimg2project("vendor_boot")
+    moveimg2project("vendor_boot")
     with VendorBoot() as vboot:
         vboot.unpack()
         vboot.remove_avb()

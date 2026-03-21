@@ -25,6 +25,7 @@ tikpath.set_project("TEST")
 
 myprinter = MyPrinter()
 
+# VAB
 DEVICE = "popsicle"
 WORK = tikpath.project_path
 PRIV_RESOURCE = tikpath.res_path_for(DEVICE)
@@ -98,33 +99,33 @@ targets = [
 for target in targets:
     img_path = os.path.join(WORK, "images", f"{target}.img")
     if os.path.exists(img_path):
-        shutil.move(img_path, tikpath.project_path)
+        shutil.move(img_path, f"{tikpath.project_path}/{target}_a.img")
         myprinter.print_green(f"Moved {target} to project path")
     else:
         myprinter.print_yellow(f"{target} not found in images")
 
 # unpack
-img_vendor = MyImage("vendor")
+img_vendor = MyImage("vendor_a")
 img_vendor.unpack()
 
-img_system = MyImage("system")
+img_system = MyImage("system_a")
 img_system.unpack()
 
-img_mi_ext = MyImage("mi_ext")
+img_mi_ext = MyImage("mi_ext_a")
 img_mi_ext.unpack()
 
-img_product = MyImage("product")
+img_product = MyImage("product_a")
 img_product.unpack()
 
-img_system_ext = MyImage("system_ext")
+img_system_ext = MyImage("system_ext_a")
 img_system_ext.unpack()
 
 # remove gms restrictions
-ProductDealer(True).unlock_gms()
-VendorDealer(True).remove_avb()
+ProductDealer(is_aonly=False).unlock_gms()
+VendorDealer(is_aonly=False).remove_avb()
 
 # add general components
-ModuleDealer("MiEGeneralComponentsxt").perform_task()
+ModuleDealer("GeneralComponents").perform_task()
 
 # split mi_ext and move stuff to corresponding partition
 ModuleDealer("MiExt").perform_task()
@@ -160,7 +161,7 @@ ModuleDealer("PropMod").perform_task()
 img_vendor.pack_erofs().out2super()
 img_vendor.unlink().rm_content()
 
-img_mi_ext.pack_ext().out2super()
+img_mi_ext.pack_erofs().out2super()
 img_product.pack_ext().out2super()
 img_system.pack_ext().out2super()
 img_system_ext.pack_ext().out2super()
@@ -172,11 +173,17 @@ if RUN_EXTRA_STEPS:
     img_system_ext.unlink().rm_content()
 
 # untouched partitions
-MyImage("odm").move2super()
-MyImage("system_dlkm").move2super()
-MyImage("vendor_dlkm").move2super()
+MyImage("odm_a").move2super()
+MyImage("system_dlkm_a").move2super()
+MyImage("vendor_dlkm_a").move2super()
 
-sh = lp.make_sh(tikpath.super, device_size, qti_size, super_type=lp.SuperType.VAB)
+sh = lp.make_sh(
+    tikpath.super,
+    device_size,
+    qti_size,
+    super_type=lp.SuperType.VAB,
+    targets=list(lp.get_targets()),
+)
 lp.cook(sh, tikpath.super)
 
 # 清理super目录 只保留super.img

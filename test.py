@@ -27,4 +27,4 @@ DEVICE = "popsicle"
 WORK = tikpath.project_path
 PRIV_RESOURCE = tikpath.res_path_for(DEVICE)
 
-general.replace_kernel(PRIV_RESOURCE, WORK)
+ModuleDealer("GameProp").perform_task()

@@ -122,7 +122,7 @@ img_system_ext.unpack()
 
 # remove gms restrictions
 ProductDealer(is_aonly=False).unlock_gms()
-VendorDealer(is_aonly=False).remove_avb()
+VendorDealer(is_aonly=False).remove_avb().drop_overlay()
 
 # split mi_ext and move stuff to corresponding partition
 ModuleDealer("MiExt").perform_task()

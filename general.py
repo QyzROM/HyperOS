@@ -89,6 +89,7 @@ def deal_with_vboot(remove_encryption: bool = True):
         if remove_encryption:
             vboot.remove_encryption()
         # vboot.fill_mount_point()
+        vboot.drop_overlay()
         vboot.repack()
 
 

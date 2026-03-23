@@ -129,8 +129,6 @@ ModuleDealer("MiExt").perform_task()
 
 ModuleDealer("FixNfc").perform_task()
 
-ModuleDealer("FixRecorder").perform_task()
-
 # add binary to system
 ModuleDealer("Binary").perform_task()
 

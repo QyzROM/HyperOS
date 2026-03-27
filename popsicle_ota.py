@@ -20,6 +20,8 @@ from tikpath import TikPath
 from src.custom import prepare, lp, Payload
 from src.util.utils import MyPrinter
 
+print("Test if using current cook menu")
+
 tikpath = TikPath()
 tikpath.set_project("TEST")
 

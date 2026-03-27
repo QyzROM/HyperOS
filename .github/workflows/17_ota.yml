@@ -5,6 +5,11 @@ permissions:
 
 on:
   workflow_dispatch:
+    inputs:
+      script:
+        description: "要运行的 Python 脚本（相对 qyz 目录），不能为空"
+        required: true
+        default: "src/device/popsicle_ota.py"
 
 jobs:
   build:
@@ -69,14 +74,24 @@ jobs:
           mkdir TEST
           uv run src/custom/download_rom.py ${{ env.MODEL }} --method recovery --out TEST
           cd ..
-        
-      - name: Build ROM
+
+      - name: Build ROM (script from dispatch input)
         env:
           RUN_EXTRA_STEPS: "1"
+          SCRIPT: ${{ github.event.inputs.script }}
+        shell: bash
         run: |
+          set -euo pipefail
           cd qyz
-          export PYTHONPATH=$(pwd)
-          uv run src/device/popsicle_ota.py
+          export PYTHONPATH="$(pwd)"
+
+          if [ ! -f "${SCRIPT}" ]; then
+            echo "Script not found: ${SCRIPT}"
+            exit 1
+          fi
+
+          echo "Running: uv run ${SCRIPT}"
+          uv run "${SCRIPT}"
           cd ..
 
       - name: Get ROM version
@@ -168,6 +183,3 @@ jobs:
           tag: ${{ steps.gen.outputs.rom_version }}
           bodyFile: release_body.md
           token: ${{ secrets.GITHUB_TOKEN }}
-
-
-

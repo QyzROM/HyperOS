@@ -37,7 +37,7 @@ jobs:
       - name: Checkout current repo into device
         uses: actions/checkout@v4
         with:
-          path: qyz/device
+          path: qyz/src/device
 
       # - name: Free disk space (1/2)
       #   uses: jlumbroso/free-disk-space@main

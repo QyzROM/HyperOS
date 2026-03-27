@@ -26,11 +26,6 @@ jobs:
       DEVICE_NAME: ${{ matrix.device.name }}
 
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-        with:
-          submodules: recursive
-
       - name: Checkout another repo
         uses: actions/checkout@v4
         with:
@@ -38,7 +33,11 @@ jobs:
           ref: mi
           token: ${{ secrets.TOKEN }}
           path: qyz
-          submodules: recursive
+
+      - name: Checkout current repo into device
+        uses: actions/checkout@v4
+        with:
+          path: qyz/device
 
       # - name: Free disk space (1/2)
       #   uses: jlumbroso/free-disk-space@main

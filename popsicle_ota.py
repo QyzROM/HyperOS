@@ -20,10 +20,10 @@ from tikpath import TikPath
 from src.custom import prepare, lp, Payload
 from src.util.utils import MyPrinter
 
-print("Test if using current cook menu")
-
 tikpath = TikPath()
 tikpath.set_project("TEST")
+
+remove_encryption = False
 
 myprinter = MyPrinter()
 
@@ -55,7 +55,7 @@ if RUN_EXTRA_STEPS:
 
 # 2. 分门别类处理镜像
 # 2.1 avb去除
-general.deal_with_avb()
+# no need, deal with fstab file
 
 # 2.2 内核替换
 # now it's 6.12.23 lkm
@@ -67,10 +67,7 @@ general.patch_lkm("android16-6.12")
 # general.replace_rec(PRIV_RESOURCE)
 
 # 2.4 处理vendor_boot
-general.deal_with_vboot(False)
-
-# 2.5 处理optics
-pass
+general.deal_with_vboot(remove_encryption=remove_encryption)
 
 # 处理super
 json_path = os.path.join(PRIV_RESOURCE, "super.json")
@@ -124,7 +121,7 @@ img_system_ext.unpack()
 
 # remove gms restrictions
 ProductDealer(is_aonly=False).unlock_gms()
-VendorDealer(is_aonly=False).remove_avb().drop_overlay()
+VendorDealer(is_aonly=False).remove_avb().drop_overlay().remove_encryption(remove_encryption)
 
 # split mi_ext and move stuff to corresponding partition
 ModuleDealer("MiExt").perform_task()
@@ -196,4 +193,4 @@ if RUN_EXTRA_STEPS:
 ImageConverter(f"{tikpath.super}/super.img").zstd_compress(need_remove_old=True)
 
 # 3. 打包
-prepare.archive_ota(__name__)
+prepare.archive_ota(f"{DEVICE}_{ver}")

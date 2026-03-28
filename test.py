@@ -51,13 +51,15 @@ if RUN_EXTRA_STEPS:
     ) as f:
         f.write(ver)
 
+exit(0)
+
 # 2. 分门别类处理镜像
 # 2.1 avb去除
 general.deal_with_avb()
 
 # 2.2 内核替换
 # now it's 6.12.23 lkm
-general.replace_kernel(PRIV_RESOURCE, WORK)
+# general.replace_kernel(PRIV_RESOURCE, WORK)
 # 补充 进行ksu-lkm修补
 general.patch_lkm("android16-6.12")
 
@@ -67,6 +69,7 @@ general.patch_lkm("android16-6.12")
 # 2.4 处理vendor_boot
 general.deal_with_vboot(False)
 
+exit(0)
 # 2.5 处理optics
 pass
 

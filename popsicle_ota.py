@@ -21,7 +21,7 @@ from src.custom import prepare, lp, Payload
 from src.util.utils import MyPrinter
 
 tikpath = TikPath()
-tikpath.set_project("TEST")
+tikpath.set_project("Mi")
 
 remove_encryption = False
 
@@ -34,8 +34,8 @@ PRIV_RESOURCE = tikpath.res_path_for(DEVICE)
 
 general.clean()
 
-# 1. 提取需要的文件
-zip_file_path = prepare.unarchive_ota()
+# 1. 提取需要的文件: extract imgs from zip (thanks to payload-dumper-rust)
+zip_file_path = prepare.unarchive_images_from_zip()
 
 # extract ver
 ver = prepare.extract_ver_of_ota(f"{WORK}/extracted/care_map.pb")
@@ -121,7 +121,9 @@ img_system_ext.unpack()
 
 # remove gms restrictions
 ProductDealer(is_aonly=False).unlock_gms()
-VendorDealer(is_aonly=False).remove_avb().drop_overlay().remove_encryption(remove_encryption)
+VendorDealer(is_aonly=False).remove_avb().drop_overlay().remove_encryption(
+    remove_encryption
+)
 
 # split mi_ext and move stuff to corresponding partition
 ModuleDealer("MiExt").perform_task()
@@ -150,6 +152,8 @@ ModuleDealer("GameProp").perform_task()
 # ModuleDealer("DexoatProp").perform_task()
 
 ModuleDealer("BLFake").perform_task()
+
+ModuleDealer("Fonts_Mi").perform_task()
 
 # misc
 # ModuleDealer("PropMod").perform_task()
@@ -193,4 +197,4 @@ if RUN_EXTRA_STEPS:
 ImageConverter(f"{tikpath.super}/super.img").zstd_compress(need_remove_old=True)
 
 # 3. 打包
-prepare.archive_ota(f"{DEVICE}_{ver}")
+prepare.archive_ota(f"{DEVICE}_{ver}.zip")

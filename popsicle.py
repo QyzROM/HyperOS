@@ -47,7 +47,7 @@ general.deal_with_avb()
 
 # 2.2 内核替换
 # now it's 6.12.23 lkm
-general.replace_kernel(PRIV_RESOURCE, WORK)
+# general.replace_kernel(PRIV_RESOURCE, WORK)
 # 补充 进行ksu-lkm修补
 general.patch_lkm("android16-6.12")
 
@@ -116,6 +116,8 @@ ModuleDealer("BLFake").perform_task()
 
 # misc
 ModuleDealer("PropMod").perform_task()
+
+ModuleDealer("Fonts_Mi").perform_task()
 
 # repack and move to super
 img_vendor.pack_erofs().out2super()

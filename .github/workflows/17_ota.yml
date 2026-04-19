@@ -97,21 +97,21 @@ jobs:
       - name: Get ROM version
         id: get_version
         run: |
-          ROM_VERSION=$(cat qyz/TEST/version_info.txt)
+          ROM_VERSION=$(cat qyz/Mi/version_info.txt)
           echo "ROM Version: $ROM_VERSION"
           echo "ROM_VERSION=$ROM_VERSION" >> "$GITHUB_ENV"
 
       - name: Upload to GoFile
         id: upload
         run: |
-          ZIP_FILE=$(find qyz/TEST -maxdepth 1 -type f -name "*.zip" | head -n 1)
+          ZIP_FILE=$(find qyz/Mi -maxdepth 1 -type f -name "*.zip" | head -n 1)
           if [ -z "$ZIP_FILE" ]; then
             echo "No ZIP file found!"
             exit 1
           fi
           NEW_ZIP_NAME="QyzROM_${{ env.MODEL }}.zip"
-          mv "$ZIP_FILE" "qyz/TEST/$NEW_ZIP_NAME"
-          RESPONSE=$(curl -s -F "file=@qyz/TEST/$NEW_ZIP_NAME" -F "token=${{ secrets.GOFILE_TOKEN }}" -F "folderId=${{ secrets.GOFILE_FOLDER_ID }}" "https://upload-eu-par.gofile.io/uploadFile")
+          mv "$ZIP_FILE" "qyz/Mi/$NEW_ZIP_NAME"
+          RESPONSE=$(curl -s -F "file=@qyz/Mi/$NEW_ZIP_NAME" -F "token=${{ secrets.GOFILE_TOKEN }}" -F "folderId=${{ secrets.GOFILE_FOLDER_ID }}" "https://upload-eu-par.gofile.io/uploadFile")
           echo "Upload response: $RESPONSE"
           URL=$(echo "$RESPONSE" | jq -r '.data.downloadPage')
           if [ -z "$URL" ] || [ "$URL" = "null" ]; then

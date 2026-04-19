@@ -71,8 +71,8 @@ jobs:
       - name: Download firmware(zip)
         run: |
           cd qyz
-          mkdir TEST
-          uv run src/custom/download_rom.py ${{ env.MODEL }} --method recovery --out TEST
+          mkdir Mi
+          uv run src/custom/download_rom.py ${{ env.MODEL }} --method recovery --out Mi
           cd ..
 
       - name: Build ROM (script from dispatch input)

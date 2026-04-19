@@ -41,9 +41,6 @@ zip_file_path = prepare.unarchive_images_from_zip()
 ver = prepare.extract_ver_of_ota(f"{WORK}/extracted/care_map.pb")
 myprinter.print_green(f"Extracted version: {ver}")
 
-# extract imgs from payload.bin
-Payload.Payload(f"{WORK}/extracted/payload.bin").extract(f"{WORK}/images")
-
 if RUN_EXTRA_STEPS:
     os.remove(zip_file_path)
     shutil.rmtree(f"{WORK}/extracted")

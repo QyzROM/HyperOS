@@ -30,12 +30,11 @@ DEVICE = "popsicle"
 WORK = tikpath.project_path
 PRIV_RESOURCE = tikpath.res_path_for(DEVICE)
 
-# general.clean()
+general.clean()
 
 
-img_system = MyImage("system_a")
-img_system.unpack()
+# 1. 提取需要的文件: extract imgs from zip (thanks to payload-dumper-rust)
+zip_file_path = prepare.unarchive_images_from_zip()
 
-ModuleDealer("Fonts_Mi").perform_task()
-
-img_system.pack_ext()
+# 2.4 处理vendor_boot
+general.deal_with_vboot(remove_encryption=False)

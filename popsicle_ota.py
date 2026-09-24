@@ -89,6 +89,7 @@ targets = [
     "odm",
     "system_dlkm",
     "vendor_dlkm",
+    "mi_product"
 ]
 
 # move images to project_path
@@ -128,10 +129,10 @@ ModuleDealer("MiExt").perform_task()
 ModuleDealer("FixNfc").perform_task()
 
 # add binary to system
-ModuleDealer("Binary").perform_task()
+# ModuleDealer("Binary").perform_task()
 
 # preload apks
-ModuleDealer("Preload").perform_task()
+# ModuleDealer("Preload").perform_task()
 
 # add general components
 ModuleDealer("GeneralComponents").perform_task()
@@ -143,14 +144,14 @@ ModuleDealer("DeBloat").perform_task()
 # ModuleDealer("UiProp").perform_task()
 
 # fast enter game
-ModuleDealer("GameProp").perform_task()
+# ModuleDealer("GameProp").perform_task()
 
 # fast dexoat
 # ModuleDealer("DexoatProp").perform_task()
 
 ModuleDealer("BLFake").perform_task()
 
-ModuleDealer("Fonts_Mi").perform_task()
+# ModuleDealer("Fonts_Mi").perform_task()
 
 # misc
 # ModuleDealer("PropMod").perform_task()
@@ -174,6 +175,7 @@ if RUN_EXTRA_STEPS:
 MyImage("odm_a").move2super()
 MyImage("system_dlkm_a").move2super()
 MyImage("vendor_dlkm_a").move2super()
+MyImage("mi_product_a").move2super()
 
 sh = lp.make_sh(
     tikpath.super,

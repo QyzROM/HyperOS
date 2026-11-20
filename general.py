@@ -11,7 +11,6 @@ from src.image.ImageConverter import ImageConverter
 from src.image.ImagePacker import ImagePacker
 from src.image.ImageUnpacker import ImageUnpacker
 from src.image.VendorBoot import VendorBoot
-from src.image.image import Kernel, BootImg
 from src.util.utils import MyPrinter
 from tikpath import TikPath
 
